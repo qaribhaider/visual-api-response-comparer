@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import CodeEditor from './Editor';
 import { ErrorBoundary } from './ErrorBoundary';
 
@@ -45,7 +45,7 @@ return response;`;
         return 'Only HTTP and HTTPS protocols are allowed';
       }
       return null;
-    } catch (error) {
+    } catch {
       return 'Invalid URL format';
     }
   }, []);
@@ -55,13 +55,12 @@ return response;`;
     if (!jsonString.trim()) return null; // Empty is valid
     try {
       // Attempt to parse the JSON
-      const parsed = JSON.parse(jsonString);
+      JSON.parse(jsonString);
       
       // Additional custom validation can be added here
-      // For example, checking for specific keys or structures
       
       return null; // Valid JSON
-    } catch (error) {
+    } catch {
       return 'Invalid JSON format';
     }
   }, []);

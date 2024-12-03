@@ -21,7 +21,7 @@ export default function GlobalError({
           <div className="bg-dark-50 p-8 rounded-lg shadow-xl max-w-md w-full">
             <h1 className="text-3xl font-bold text-red-500 mb-4">Application Error</h1>
             <p className="text-dark-text-primary mb-6">
-              Something went wrong. We're working on fixing it.
+              Something went wrong. We are working on fixing it.
             </p>
             
             <div className="bg-dark-25 p-4 rounded mb-6 overflow-x-auto">
