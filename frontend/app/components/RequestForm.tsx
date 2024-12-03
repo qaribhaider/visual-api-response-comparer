@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import CodeEditor from './Editor';
 
 interface RequestFormProps {
@@ -23,6 +23,7 @@ export function RequestForm({ title, onSubmit, onModifierChange }: RequestFormPr
   const [modifier, setModifier] = useState('');
   const [isModifierOpen, setIsModifierOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'headers' | 'body'>('headers');
+  const [errors, setErrors] = useState<{ url?: string; body?: string }>({});
 
   const defaultModifierCode = `// Example: Modify the response before comparison
 // The 'response' variable contains the API response
@@ -32,20 +33,71 @@ if (response.ip === '') {
 }
 return response;`;
 
+  // URL Validation Function
+  const validateUrl = useCallback((inputUrl: string) => {
+    try {
+      const url = new URL(inputUrl);
+      // Additional checks can be added here
+      const allowedProtocols = ['http:', 'https:'];
+      if (!allowedProtocols.includes(url.protocol)) {
+        return 'Only HTTP and HTTPS protocols are allowed';
+      }
+      return null;
+    } catch (error) {
+      return 'Invalid URL format';
+    }
+  }, []);
+
+  // JSON Validation Function
+  const validateJson = useCallback((jsonString: string) => {
+    if (!jsonString.trim()) return null; // Empty is valid
+    try {
+      // Attempt to parse the JSON
+      const parsed = JSON.parse(jsonString);
+      
+      // Additional custom validation can be added here
+      // For example, checking for specific keys or structures
+      
+      return null; // Valid JSON
+    } catch (error) {
+      return 'Invalid JSON format';
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate URL
+    const urlError = validateUrl(url);
+    
+    // Validate Body (if not GET method)
+    const bodyError = method !== 'GET' ? validateJson(body) : null;
+    
+    // Set errors if any
+    if (urlError || bodyError) {
+      setErrors({
+        url: urlError || undefined,
+        body: bodyError || undefined
+      });
+      return;
+    }
+
+    // Clear any previous errors
+    setErrors({});
+
     const formattedHeaders = headers.reduce((acc, header) => {
       if (header.key && header.value) {
-        acc[header.key] = header.value;
+        // Sanitize header keys and values
+        acc[header.key.trim()] = header.value.trim();
       }
       return acc;
     }, {} as Record<string, string>);
 
     onSubmit({
-      url,
+      url: url.trim(),
       method,
       headers: formattedHeaders,
-      body,
+      body: body.trim(),
       modifier,
     });
   };
@@ -71,14 +123,27 @@ return response;`;
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-2">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="API URL"
-              className="flex-1 p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-dark-primary"
-              required
-            />
+            <div className="flex-1">
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  // Optional: Clear URL error as user types
+                  if (errors.url) {
+                    setErrors(prev => ({ ...prev, url: undefined }));
+                  }
+                }}
+                placeholder="API URL"
+                className={`w-full p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary placeholder-dark-text-secondary focus:outline-none focus:ring-2 ${
+                  errors.url ? 'border-red-500 focus:ring-red-500' : 'focus:ring-dark-primary'
+                }`}
+                required
+              />
+              {errors.url && (
+                <p className="text-red-500 text-sm mt-1">{errors.url}</p>
+              )}
+            </div>
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value)}
@@ -165,10 +230,21 @@ return response;`;
                 <div className="space-y-2">
                   <textarea
                     value={body}
-                    onChange={(e) => setBody(e.target.value)}
+                    onChange={(e) => {
+                      setBody(e.target.value);
+                      // Optional: Clear body error as user types
+                      if (errors.body) {
+                        setErrors(prev => ({ ...prev, body: undefined }));
+                      }
+                    }}
                     placeholder="Request body (JSON)"
-                    className="w-full p-2 border rounded h-24 font-mono text-sm bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
+                    className={`w-full p-2 border rounded h-24 font-mono text-sm bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary ${
+                      errors.body ? 'border-red-500' : ''
+                    }`}
                   />
+                  {errors.body && (
+                    <p className="text-red-500 text-sm mt-1">{errors.body}</p>
+                  )}
                 </div>
               )}
             </div>
