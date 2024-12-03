@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import CodeEditor from './Editor';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface RequestFormProps {
   title: string;
@@ -15,7 +16,7 @@ interface RequestFormProps {
   onModifierChange: (modifier: string) => void;
 }
 
-export function RequestForm({ title, onSubmit, onModifierChange }: RequestFormProps) {
+function RequestFormContent({ title, onSubmit, onModifierChange }: RequestFormProps) {
   const [url, setUrl] = useState('');
   const [method, setMethod] = useState('GET');
   const [headers, setHeaders] = useState<{ key: string; value: string }[]>([]);
@@ -24,6 +25,7 @@ export function RequestForm({ title, onSubmit, onModifierChange }: RequestFormPr
   const [isModifierOpen, setIsModifierOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'headers' | 'body'>('headers');
   const [errors, setErrors] = useState<{ url?: string; body?: string }>({});
+  const [componentError, setComponentError] = useState<Error | null>(null);
 
   const defaultModifierCode = `// Example: Modify the response before comparison
 // The 'response' variable contains the API response
@@ -63,6 +65,15 @@ return response;`;
       return 'Invalid JSON format';
     }
   }, []);
+
+  const safeOnSubmit = (e: React.FormEvent) => {
+    try {
+      handleSubmit(e);
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      setComponentError(error instanceof Error ? error : new Error('Unknown error'));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,12 +127,27 @@ return response;`;
     setHeaders(newHeaders);
   };
 
+  if (componentError) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded">
+        <h3 className="text-red-700 font-bold mb-2">Request Form Error</h3>
+        <p className="text-red-600">{componentError.message}</p>
+        <button 
+          onClick={() => setComponentError(null)}
+          className="mt-2 px-3 py-1 bg-red-500 text-white rounded"
+        >
+          Reset
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="p-4 border rounded-lg bg-dark-100 border-dark-border">
         <h3 className="text-lg font-medium mb-4 text-dark-text-primary">{title}</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={safeOnSubmit} className="space-y-4">
           <div className="flex gap-2">
             <div className="flex-1">
               <input
@@ -289,5 +315,13 @@ return response;`;
         </div>
       </div>
     </>
+  );
+}
+
+export function RequestForm(props: RequestFormProps) {
+  return (
+    <ErrorBoundary>
+      <RequestFormContent {...props} />
+    </ErrorBoundary>
   );
 }
