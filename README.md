@@ -12,13 +12,13 @@ A modern web application for comparing API responses with powerful modification 
 - Real-time difference highlighting
 - Modern and responsive UI
 
-## Tech Stack
+### Technologies
 
 - Next.js 14 with App Router
 - TypeScript
 - Tailwind CSS
 - Monaco Editor for code editing
-- Axios for API requests
+- Native `fetch()` for API requests
 - React Split for resizable panels
 
 ## Getting Started
@@ -49,8 +49,8 @@ npm run dev
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd api-response-comparer
+git clone https://github.com/qaribhaider/visual-api-response-comparer/
+cd visual-api-response-comparer
 ```
 
 2. Build and start the containers:
