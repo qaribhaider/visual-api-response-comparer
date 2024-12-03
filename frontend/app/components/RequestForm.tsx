@@ -66,8 +66,8 @@ return response;`;
 
   return (
     <>
-      <div className="p-4 border rounded-lg">
-        <h3 className="text-lg font-medium mb-4">{title}</h3>
+      <div className="p-4 border rounded-lg bg-dark-100 border-dark-border">
+        <h3 className="text-lg font-medium mb-4 text-dark-text-primary">{title}</h3>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-2">
@@ -76,13 +76,13 @@ return response;`;
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="API URL"
-              className="flex-1 p-2 border rounded"
+              className="flex-1 p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-dark-primary"
               required
             />
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value)}
-              className="w-24 p-2 border rounded"
+              className="w-24 p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary"
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
@@ -91,15 +91,15 @@ return response;`;
             </select>
           </div>
 
-          <div className="border rounded-lg overflow-hidden">
-            <div className="flex border-b">
+          <div className="border rounded-lg overflow-hidden border-dark-border">
+            <div className="flex border-b border-dark-border bg-dark-200">
               <button
                 type="button"
                 onClick={() => setActiveTab('headers')}
                 className={`flex-1 px-4 py-2 text-sm font-medium ${
                   activeTab === 'headers'
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-dark-300 text-dark-text-primary'
+                    : 'text-dark-text-secondary hover:bg-dark-200'
                 }`}
               >
                 Headers
@@ -109,22 +109,22 @@ return response;`;
                 onClick={() => setActiveTab('body')}
                 className={`flex-1 px-4 py-2 text-sm font-medium ${
                   activeTab === 'body'
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-dark-300 text-dark-text-primary'
+                    : 'text-dark-text-secondary hover:bg-dark-200'
                 }`}
               >
                 Request Body
               </button>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 bg-dark-50">
               {activeTab === 'headers' ? (
                 <div className="space-y-2">
                   <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={addHeader}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="text-sm text-dark-primary hover:text-dark-accent"
                     >
                       + Add Header
                     </button>
@@ -136,19 +136,19 @@ return response;`;
                         value={header.key}
                         onChange={(e) => updateHeader(index, 'key', e.target.value)}
                         placeholder="Header Key"
-                        className="w-1/2 p-2 border rounded text-sm"
+                        className="w-1/2 p-2 border rounded bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
                       />
                       <input
                         type="text"
                         value={header.value}
                         onChange={(e) => updateHeader(index, 'value', e.target.value)}
                         placeholder="Header Value"
-                        className="w-1/2 p-2 border rounded text-sm"
+                        className="w-1/2 p-2 border rounded bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
                       />
                       <button
                         type="button"
                         onClick={() => removeHeader(index)}
-                        className="text-red-500 hover:text-red-700 px-2"
+                        className="text-dark-text-secondary hover:text-red-500 px-2"
                         title="Remove header"
                       >
                         ×
@@ -156,7 +156,7 @@ return response;`;
                     </div>
                   ))}
                   {headers.length === 0 && (
-                    <div className="text-center text-gray-500 py-4">
+                    <div className="text-center text-dark-text-muted py-4">
                       No headers added
                     </div>
                   )}
@@ -167,7 +167,7 @@ return response;`;
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
                     placeholder="Request body (JSON)"
-                    className="w-full p-2 border rounded h-24 font-mono text-sm"
+                    className="w-full p-2 border rounded h-24 font-mono text-sm bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
                   />
                 </div>
               )}
@@ -176,18 +176,18 @@ return response;`;
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+            className="w-full bg-dark-primary text-white py-2 rounded hover:bg-dark-accent transition-colors"
           >
             Send Request
           </button>
         </form>
       </div>
 
-      <div className="p-4 mt-4 border rounded-lg">
+      <div className="p-4 mt-4 border rounded-lg bg-dark-100 border-dark-border">
         <div>
           <button
             onClick={() => setIsModifierOpen(!isModifierOpen)}
-            className="w-full text-sm text-gray-700 hover:text-gray-900 py-2 flex items-center justify-center gap-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+            className="w-full text-sm text-dark-text-primary hover:text-dark-text-secondary py-2 flex items-center justify-center gap-2 rounded-md border border-dark-border hover:bg-dark-200 transition-colors"
           >
             <span>{isModifierOpen ? '▼' : '▶'}</span>
             Response Modifier
@@ -195,7 +195,7 @@ return response;`;
 
           {isModifierOpen && (
             <div className="mt-4 space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-dark-text-secondary">
                 Modify Response
               </label>
               <CodeEditor

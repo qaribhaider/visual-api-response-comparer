@@ -31,7 +31,7 @@ export default function CodeEditor({
         tabSize: 2,
         ...options,
       }}
-      theme="vs-light"
+      theme="vs-dark"
     />
   );
 }

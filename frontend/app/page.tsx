@@ -90,44 +90,48 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-8">API Response Comparer</h1>
-      
-      <Split
-        className="flex"
-        gutterSize={16}
-        minSize={400}
-      >
-        <div className="pr-2">
-          <RequestForm 
-            title="Request 1"
-            onSubmit={(request) => handleRequest('left', request)}
-            onModifierChange={(modifier) => {
-              setLeftModifier(modifier);
-            }}
-          />
-        </div>
-        <div className="pl-2">
-          <RequestForm 
-            title="Request 2"
-            onSubmit={(request) => handleRequest('right', request)}
-            onModifierChange={(modifier) => {
-              setRightModifier(modifier);
-            }}
-          />
-        </div>
-      </Split>
+    <main className="min-h-screen bg-dark-100 text-dark-text-primary">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8 text-center text-dark-text-primary">
+          API Response Comparer
+        </h1>
+        
+        <Split
+          className="flex"
+          gutterSize={16}
+          minSize={400}
+        >
+          <div className="pr-2">
+            <RequestForm 
+              title="Request 1"
+              onSubmit={(request) => handleRequest('left', request)}
+              onModifierChange={(modifier) => {
+                setLeftModifier(modifier);
+              }}
+            />
+          </div>
+          <div className="pl-2">
+            <RequestForm 
+              title="Request 2"
+              onSubmit={(request) => handleRequest('right', request)}
+              onModifierChange={(modifier) => {
+                setRightModifier(modifier);
+              }}
+            />
+          </div>
+        </Split>
 
-      {loading.left || loading.right ? (
-        <div className="mt-8">
-          <div className="text-center py-8 text-gray-500">Loading responses...</div>
-        </div>
-      ) : (leftResponse || rightResponse) && (
-        <div className="mt-8 space-y-8">
-          <VisualDiffView left={leftResponse} right={rightResponse} />
-          <DiffView left={leftResponse} right={rightResponse} />
-        </div>
-      )}
+        {loading.left || loading.right ? (
+          <div className="mt-8">
+            <div className="text-center py-8 text-gray-500">Loading responses...</div>
+          </div>
+        ) : (leftResponse || rightResponse) && (
+          <div className="mt-8 space-y-8">
+            <VisualDiffView left={leftResponse} right={rightResponse} />
+            <DiffView left={leftResponse} right={rightResponse} />
+          </div>
+        )}
+      </div>
     </main>
   );
 }
