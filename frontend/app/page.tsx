@@ -104,6 +104,7 @@ export default function Home() {
           <div className="pr-2">
             <RequestForm 
               title="Request 1"
+              panelId="left"
               onSubmit={(request) => handleRequest('left', request)}
               onModifierChange={(modifier) => {
                 setLeftModifier(modifier);
@@ -113,6 +114,7 @@ export default function Home() {
           <div className="pl-2">
             <RequestForm 
               title="Request 2"
+              panelId="right"
               onSubmit={(request) => handleRequest('right', request)}
               onModifierChange={(modifier) => {
                 setRightModifier(modifier);

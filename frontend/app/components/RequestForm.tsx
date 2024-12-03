@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import CodeEditor from './Editor';
 import { ErrorBoundary } from './ErrorBoundary';
 
 interface RequestFormProps {
   title: string;
+  panelId: string;
   onSubmit: (request: {
     url: string;
     method: string;
@@ -16,9 +17,78 @@ interface RequestFormProps {
   onModifierChange: (modifier: string) => void;
 }
 
-function RequestFormContent({ title, onSubmit, onModifierChange }: RequestFormProps) {
+// Strictly typed configuration for local storage
+type RequestConfig = {
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers: Array<{ key: string; value: string }>;
+  body: string;
+};
+
+// Validation function to ensure type safety
+function isValidRequestConfig(config: any): config is RequestConfig {
+  // Detailed logging for debugging
+  console.log('Validating config:', config);
+
+  // Check if config is an object
+  if (typeof config !== 'object' || config === null) {
+    console.warn('Invalid config: not an object');
+    return false;
+  }
+
+  // Validate URL (allow empty string)
+  if (typeof config.url !== 'string') {
+    console.warn('Invalid URL:', config.url);
+    return false;
+  }
+
+  // Validate method
+  const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+  if (!allowedMethods.includes(config.method)) {
+    console.warn('Invalid method:', config.method);
+    return false;
+  }
+
+  // Validate headers
+  if (!Array.isArray(config.headers)) {
+    console.warn('Headers is not an array:', config.headers);
+    return false;
+  }
+
+  // Strict header validation
+  const validHeaders = config.headers.every(
+    (header: any) => 
+      header !== null &&
+      typeof header === 'object' && 
+      typeof header.key === 'string' && 
+      typeof header.value === 'string'
+  );
+
+  if (!validHeaders) {
+    console.warn('Invalid headers:', config.headers);
+    return false;
+  }
+
+  // Validate body
+  if (typeof config.body !== 'string') {
+    console.warn('Invalid body:', config.body);
+    return false;
+  }
+
+  return true;
+}
+
+function RequestFormContent({ 
+  title, 
+  panelId, 
+  onSubmit, 
+  onModifierChange 
+}: RequestFormProps) {
+  // Unique local storage key for this specific panel
+  const LOCAL_STORAGE_KEY = `request-config-${panelId}-v2`;
+
   const [url, setUrl] = useState('');
-  const [method, setMethod] = useState('GET');
+  const [method, setMethod] = useState<'GET' | 'POST' | 'PUT' | 'DELETE'>('GET');
   const [headers, setHeaders] = useState<{ key: string; value: string }[]>([]);
   const [body, setBody] = useState('');
   const [modifier, setModifier] = useState('');
@@ -26,6 +96,92 @@ function RequestFormContent({ title, onSubmit, onModifierChange }: RequestFormPr
   const [activeTab, setActiveTab] = useState<'headers' | 'body'>('headers');
   const [errors, setErrors] = useState<{ url?: string; body?: string }>({});
   const [componentError, setComponentError] = useState<Error | null>(null);
+
+  // Load configuration from local storage on component mount
+  useEffect(() => {
+    try {
+      console.log(`Loading configuration for ${panelId}`);
+      const savedConfigString = localStorage.getItem(LOCAL_STORAGE_KEY);
+      
+      if (savedConfigString) {
+        try {
+          const savedConfig = JSON.parse(savedConfigString);
+          
+          console.log(`Saved config for ${panelId}:`, savedConfig);
+          
+          // Validate the saved configuration
+          if (isValidRequestConfig(savedConfig)) {
+            // Explicitly set each state to ensure no reference issues
+            setUrl(savedConfig.url || '');
+            setMethod(savedConfig.method);
+            
+            // Deep clone headers to prevent any reference sharing
+            const loadedHeaders = savedConfig.headers.map(header => ({
+              key: header.key,
+              value: header.value
+            }));
+            
+            console.log(`Loaded headers for ${panelId}:`, loadedHeaders);
+            setHeaders(loadedHeaders);
+            
+            setBody(savedConfig.body || '');
+          } else {
+            // If invalid, remove the incorrect local storage entry
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+            console.warn(`Invalid saved configuration for ${panelId}, cleared local storage`);
+          }
+        } catch (parseError) {
+          // JSON parsing failed
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+          console.error(`Failed to parse saved configuration for ${panelId}:`, parseError);
+        }
+      }
+    } catch (error) {
+      console.error(`Error loading saved configuration for ${panelId}:`, error);
+    }
+  }, [LOCAL_STORAGE_KEY, panelId]);
+
+  // Save configuration to local storage whenever relevant fields change
+  useEffect(() => {
+    try {
+      // Prepare configuration object with deep cloning
+      const currentConfig: RequestConfig = {
+        url,
+        method,
+        // Create a deep, independent copy of headers
+        headers: headers.map(header => ({ 
+          key: header.key.trim(), 
+          value: header.value.trim() 
+        })),
+        body
+      };
+
+      console.log(`Saving configuration for ${panelId}:`, currentConfig);
+
+      // Validate before saving
+      if (isValidRequestConfig(currentConfig)) {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentConfig));
+      }
+    } catch (error) {
+      console.error(`Error saving configuration for ${panelId}:`, error);
+    }
+  }, [url, method, headers, body, LOCAL_STORAGE_KEY, panelId]);
+
+  // Reset all form fields and clear local storage
+  const handleReset = () => {
+    // Clear local storage
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+
+    // Reset all state
+    setUrl('');
+    setMethod('GET');
+    setHeaders([]);
+    setBody('');
+    setModifier('');
+    setIsModifierOpen(false);
+    setActiveTab('headers');
+    setErrors({});
+  };
 
   const defaultModifierCode = `// Example: Modify the response before comparison
 // The 'response' variable contains the API response
@@ -126,6 +282,16 @@ return response;`;
     setHeaders(newHeaders);
   };
 
+  // Method change handler with type-safe conversion
+  const handleMethodChange = useCallback((value: string) => {
+    // Type guard to ensure only allowed methods are set
+    const allowedMethods: Array<'GET' | 'POST' | 'PUT' | 'DELETE'> = ['GET', 'POST', 'PUT', 'DELETE'];
+    const method = value as 'GET' | 'POST' | 'PUT' | 'DELETE';
+    if (allowedMethods.includes(method)) {
+      setMethod(method);
+    }
+  }, []);
+
   if (componentError) {
     return (
       <div className="p-4 bg-red-50 border border-red-200 rounded">
@@ -171,7 +337,7 @@ return response;`;
             </div>
             <select
               value={method}
-              onChange={(e) => setMethod(e.target.value)}
+              onChange={(e) => handleMethodChange(e.target.value)}
               className="w-24 p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary"
             >
               <option value="GET">GET</option>
@@ -275,12 +441,21 @@ return response;`;
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-dark-primary text-white py-2 rounded hover:bg-dark-accent transition-colors"
-          >
-            Send Request
-          </button>
+          <div className="flex items-center space-x-2 mt-4">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm"
+            >
+              Reset
+            </button>
+            <button
+              type="submit"
+              className="flex-1 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Send Request
+            </button>
+          </div>
         </form>
       </div>
 
@@ -300,7 +475,7 @@ return response;`;
                 Modify Response
               </label>
               <CodeEditor
-                height="150px"
+                height="187.5px"
                 defaultLanguage="javascript"
                 defaultValue={defaultModifierCode}
                 onChange={(value) => {
