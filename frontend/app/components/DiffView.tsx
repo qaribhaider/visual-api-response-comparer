@@ -19,7 +19,7 @@ export function DiffView({ left, right }: DiffViewProps) {
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden border-dark-border bg-dark-100">
+    <div className="border rounded-lg overflow-hidden border-dark-border bg-dark-100 w-full">
       <div className="bg-dark-200 px-4 py-2 font-medium border-b border-dark-border text-dark-text-primary">
         Detailed Differences
       </div>

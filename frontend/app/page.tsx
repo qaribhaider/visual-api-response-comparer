@@ -123,9 +123,15 @@ export default function Home() {
           {loading.left || loading.right ? (
             <div className="text-center py-8 text-gray-500">Loading responses...</div>
           ) : (leftResponse || rightResponse) && (
-            <div className="space-y-8">
-              <VisualDiffView left={leftResponse} right={rightResponse} />
-              <DiffView left={leftResponse} right={rightResponse} />
+            <div className="space-y-8 w-full">
+              <VisualDiffView 
+                left={leftResponse} 
+                right={rightResponse} 
+              />
+              <DiffView 
+                left={leftResponse} 
+                right={rightResponse} 
+              />
             </div>
           )}
         </div>

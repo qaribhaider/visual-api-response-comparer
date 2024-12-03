@@ -21,7 +21,7 @@ export function VisualDiffView({ left, right }: VisualDiffViewProps) {
   }
 
   return (
-    <div className="border border-dark-border rounded-lg overflow-hidden bg-dark-100">
+    <div className="border border-dark-border rounded-lg overflow-hidden bg-dark-100 w-full">
       <div className="bg-dark-200 px-4 py-2 font-medium border-b border-dark-border text-dark-text-primary">
         Visual Difference
       </div>
@@ -59,6 +59,9 @@ export function VisualDiffView({ left, right }: VisualDiffViewProps) {
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
             fontSize: '13px',
             lineHeight: '1.5',
+          },
+          line: {
+            minWidth: '50%',
           },
         }}
       />
