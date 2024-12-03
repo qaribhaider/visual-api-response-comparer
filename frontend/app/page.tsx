@@ -90,18 +90,13 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-dark-100 text-dark-text-primary">
-      <div className="container mx-auto px-4 py-8">
+    <main className="min-h-screen p-4 md:px-8 lg:px-16 xl:px-24 flex flex-col items-center bg-dark-100 text-dark-text-primary">
+      <div className="w-full max-w-7xl flex flex-col">
         <h1 className="text-3xl font-bold mb-8 text-center text-dark-text-primary">
           API Response Comparer
         </h1>
-        
-        <Split
-          className="flex"
-          gutterSize={16}
-          minSize={400}
-        >
-          <div className="pr-2">
+        <div className="flex w-full">
+          <div className="pr-2 w-1/2">
             <RequestForm 
               title="Request 1"
               panelId="left"
@@ -111,7 +106,7 @@ export default function Home() {
               }}
             />
           </div>
-          <div className="pl-2">
+          <div className="pl-2 w-1/2">
             <RequestForm 
               title="Request 2"
               panelId="right"
@@ -121,18 +116,19 @@ export default function Home() {
               }}
             />
           </div>
-        </Split>
+        </div>
 
-        {loading.left || loading.right ? (
-          <div className="mt-8">
+        {/* Response comparison section */}
+        <div className="mt-4 w-full">
+          {loading.left || loading.right ? (
             <div className="text-center py-8 text-gray-500">Loading responses...</div>
-          </div>
-        ) : (leftResponse || rightResponse) && (
-          <div className="mt-8 space-y-8">
-            <VisualDiffView left={leftResponse} right={rightResponse} />
-            <DiffView left={leftResponse} right={rightResponse} />
-          </div>
-        )}
+          ) : (leftResponse || rightResponse) && (
+            <div className="space-y-8">
+              <VisualDiffView left={leftResponse} right={rightResponse} />
+              <DiffView left={leftResponse} right={rightResponse} />
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
