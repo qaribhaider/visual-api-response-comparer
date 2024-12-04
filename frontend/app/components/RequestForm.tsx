@@ -481,9 +481,15 @@ return response;`;
                 onChange={(value) => {
                   const newValue = value || '';
                   setModifier(newValue);
-                  onModifierChange(newValue);
                 }}
               />
+              <button
+                type="button"
+                onClick={() => onModifierChange(modifier)}
+                className="w-full p-2 bg-dark-200 text-dark-text-secondary rounded hover:bg-dark-300 transition-colors mt-2"
+              >
+                Apply Modifier
+              </button>
             </div>
           )}
         </div>
