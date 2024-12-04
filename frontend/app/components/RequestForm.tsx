@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import CodeEditor from './Editor';
 import { ErrorBoundary } from './ErrorBoundary';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaCog } from 'react-icons/fa';
 
 interface RequestFormProps {
   title: string;
@@ -97,6 +97,7 @@ function RequestFormContent({
   const [activeTab, setActiveTab] = useState<'headers' | 'body'>('headers');
   const [errors, setErrors] = useState<{ url?: string; body?: string }>({});
   const [componentError, setComponentError] = useState<Error | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Load configuration from local storage on component mount
   useEffect(() => {
@@ -310,10 +311,7 @@ return response;`;
 
   return (
     <>
-      {/* <div className="p-4 border rounded-lg bg-dark-100 border-dark-border"> */}
-      {/* <div className="p-4 rounded-xl bg-gray-800"> */}
       <div className="bg-white p-6 rounded-lg shadow-md border">
-        {/* <h3 className="text-lg font-semibold mb-4 text-dark-text-primary">{title}</h3> */}
         <h3 className="mb-4 text-lg font-bold text-gray-800">{title}</h3>
 
         <form onSubmit={safeOnSubmit} className="space-y-4">
@@ -322,6 +320,7 @@ return response;`;
               <input
                 type="text"
                 value={url}
+                autoFocus
                 onChange={(e) => {
                   setUrl(e.target.value);
                   // Optional: Clear URL error as user types
@@ -342,7 +341,7 @@ return response;`;
             <select
               value={method}
               onChange={(e) => handleMethodChange(e.target.value)}
-              className="w-24 py-2 px-3 border rounded-r"
+              className="w-24 py-2 px-3 border rounded-r text-sm"
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
@@ -351,112 +350,121 @@ return response;`;
             </select>
           </div>
 
-          <div className="border rounded-lg overflow-hidden">
-            <div className="flex border-b">
-              <button
-                type="button"
-                onClick={() => setActiveTab('headers')}
-                className={`flex-1 px-4 py-2 text-sm font-medium ${
-                  activeTab === 'headers'
-                    ? 'bg-gray-200'
-                    : 'hover:bg-gray-300'
-                }`}
-              >
-                Headers
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('body')}
-                className={`flex-1 px-4 py-2 text-sm font-medium ${
-                  activeTab === 'body'
-                    ? 'bg-gray-200'
-                    : 'hover:bg-gray-300'
-                }`}
-              >
-                Request Body
-              </button>
-            </div>
+          {showSettings && (
+            <div className="border rounded-lg overflow-hidden mt-4">
+              <div className="flex border-b">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('headers')}
+                  className={`flex-1 px-4 py-2 text-sm font-medium ${
+                    activeTab === 'headers'
+                      ? 'bg-gray-200'
+                      : 'hover:bg-gray-300'
+                  }`}
+                >
+                  Headers
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('body')}
+                  className={`flex-1 px-4 py-2 text-sm font-medium ${
+                    activeTab === 'body'
+                      ? 'bg-gray-200'
+                      : 'hover:bg-gray-300'
+                  }`}
+                >
+                  Request Body
+                </button>
+              </div>
 
-            <div className="p-4">
-              {activeTab === 'headers' ? (
-                <div className="space-y-2">
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={addHeader}
-                      className="text-sm text-dark-primary hover:text-dark-accent"
-                    >
-                      + Add Header
-                    </button>
-                  </div>
-                  {headers.map((header, index) => (
-                    <div key={index} className="flex gap-2">
-                      <input
-                        type="text"
-                        value={header.key}
-                        onChange={(e) => updateHeader(index, 'key', e.target.value)}
-                        placeholder="Header Key"
-                        className="w-1/2 px-3 py-1.5 border rounded text-xs"
-                      />
-                      <input
-                        type="text"
-                        value={header.value}
-                        onChange={(e) => updateHeader(index, 'value', e.target.value)}
-                        placeholder="Header Value"
-                        className="w-1/2 px-3 py-1.5 border rounded text-xs"
-                      />
+              <div className="p-4">
+                {activeTab === 'headers' ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-end">
                       <button
                         type="button"
-                        onClick={() => removeHeader(index)}
-                        className="px-2 text-gray-400 hover:text-red-500"
-                        title="Remove header"
+                        onClick={addHeader}
+                        className="text-sm text-dark-primary hover:text-dark-accent"
                       >
-                        <FaTimes className="h-3 w-3" />
+                        + Add Header
                       </button>
                     </div>
-                  ))}
-                  {headers.length === 0 && (
-                    <div className="text-center text-dark-text-muted py-4">
-                      No headers added
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <textarea
-                    value={body}
-                    onChange={(e) => {
-                      setBody(e.target.value);
-                      // Optional: Clear body error as user types
-                      if (errors.body) {
-                        setErrors(prev => ({ ...prev, body: undefined }));
-                      }
-                    }}
-                    placeholder="Request body (JSON)"
-                    className={`w-full p-2 border rounded h-24 font-mono text-sm bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary ${
-                      errors.body ? 'border-red-500' : ''
-                    }`}
-                  />
-                  {errors.body && (
-                    <p className="text-red-500 text-sm mt-1">{errors.body}</p>
-                  )}
-                </div>
-              )}
+                    {headers.map((header, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={header.key}
+                          onChange={(e) => updateHeader(index, 'key', e.target.value)}
+                          placeholder="Header Key"
+                          className="w-1/2 px-3 py-1.5 border rounded text-xs"
+                        />
+                        <input
+                          type="text"
+                          value={header.value}
+                          onChange={(e) => updateHeader(index, 'value', e.target.value)}
+                          placeholder="Header Value"
+                          className="w-1/2 px-3 py-1.5 border rounded text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeHeader(index)}
+                          className="px-2 text-gray-400 hover:text-red-500"
+                          title="Remove header"
+                        >
+                          <FaTimes className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {headers.length === 0 && (
+                      <div className="text-center text-xs">
+                        No headers added
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <textarea
+                      value={body}
+                      onChange={(e) => {
+                        setBody(e.target.value);
+                        // Optional: Clear body error as user types
+                        if (errors.body) {
+                          setErrors(prev => ({ ...prev, body: undefined }));
+                        }
+                      }}
+                      placeholder="Request body (JSON)"
+                      className={`w-full p-2 border rounded h-24 font-mono text-xs ${
+                        errors.body ? 'border-red-500' : ''
+                      }`}
+                    />
+                    {errors.body && (
+                      <p className="text-red-500 text-sm mt-1">{errors.body}</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex items-center space-x-2 mt-4">
             <button
               type="button"
               onClick={handleReset}
-              className="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm"
+              className="px-3 py-2 border border-gray-200 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
             >
               Reset
             </button>
             <button
-              type="submit"
-              className="flex-1 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              type="button"
+              onClick={() => setShowSettings(prev => !prev)}
+              className="px-3 py-2 border border-gray-200 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm inline-flex items-center gap-2"
             >
+              <FaCog className="h-3 w-3" />
+              Settings
+            </button>
+            <button
+              type="submit"
+              className="flex-1 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">
               Send Request
             </button>
           </div>
