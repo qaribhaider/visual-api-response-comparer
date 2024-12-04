@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { RequestForm } from './components/RequestForm';
 import { VisualDiffView } from './components/VisualDiffView';
 import { DiffView } from './components/DiffView';
+import { Header } from './components/Header';
 
 export default function Home() {
   const [leftResponse, setLeftResponse] = useState<any>(null);
@@ -89,50 +90,50 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-4 md:px-8 lg:px-16 xl:px-24 flex flex-col items-center bg-dark-100 text-dark-text-primary">
-      <div className="w-full max-w-7xl flex flex-col">
-        <h1 className="text-3xl font-bold mb-8 text-center text-dark-text-primary">
-          API Response Comparer
-        </h1>
-        <div className="flex w-full">
-          <div className="pr-2 w-1/2">
-            <RequestForm 
-              title="Request 1"
-              panelId="left"
-              onSubmit={(request) => handleRequest('left', request)}
-              onModifierChange={(modifier) => {
-                setLeftModifier(modifier);
-              }}
-            />
-          </div>
-          <div className="pl-2 w-1/2">
-            <RequestForm 
-              title="Request 2"
-              panelId="right"
-              onSubmit={(request) => handleRequest('right', request)}
-              onModifierChange={(modifier) => {
-                setRightModifier(modifier);
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Response comparison section */}
-        <div className="mt-4 w-full">
-          {loading.left || loading.right ? (
-            <div className="text-center py-8 text-gray-500">Loading responses...</div>
-          ) : (leftResponse || rightResponse) && (
-            <div className="space-y-8 w-full">
-              <VisualDiffView 
-                left={leftResponse} 
-                right={rightResponse} 
-              />
-              <DiffView 
-                left={leftResponse} 
-                right={rightResponse} 
+    <main className="min-h-screen bg-gray-100">
+      <Header />
+      <div className="p-4 md:px-8 lg:px-16 xl:px-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex w-full">
+            <div className="pr-2 w-1/2">
+              <RequestForm 
+                title="Request 1"
+                panelId="left"
+                onSubmit={(request) => handleRequest('left', request)}
+                onModifierChange={(modifier) => {
+                  setLeftModifier(modifier);
+                }}
               />
             </div>
-          )}
+            <div className="pl-2 w-1/2">
+              <RequestForm 
+                title="Request 2"
+                panelId="right"
+                onSubmit={(request) => handleRequest('right', request)}
+                onModifierChange={(modifier) => {
+                  setRightModifier(modifier);
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Response comparison section */}
+          <div className="mt-4 w-full">
+            {loading.left || loading.right ? (
+              <div className="text-center py-8 text-gray-500">Loading responses...</div>
+            ) : (leftResponse || rightResponse) && (
+              <div className="space-y-8 w-full">
+                <VisualDiffView 
+                  left={leftResponse} 
+                  right={rightResponse} 
+                />
+                <DiffView 
+                  left={leftResponse} 
+                  right={rightResponse} 
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </main>

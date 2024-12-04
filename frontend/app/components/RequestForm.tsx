@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import CodeEditor from './Editor';
 import { ErrorBoundary } from './ErrorBoundary';
+import { FaTimes } from 'react-icons/fa';
 
 interface RequestFormProps {
   title: string;
@@ -309,11 +310,14 @@ return response;`;
 
   return (
     <>
-      <div className="p-4 border rounded-lg bg-dark-100 border-dark-border">
-        <h3 className="text-lg font-medium mb-4 text-dark-text-primary">{title}</h3>
+      {/* <div className="p-4 border rounded-lg bg-dark-100 border-dark-border"> */}
+      {/* <div className="p-4 rounded-xl bg-gray-800"> */}
+      <div className="bg-white p-6 rounded-lg shadow-md border">
+        {/* <h3 className="text-lg font-semibold mb-4 text-dark-text-primary">{title}</h3> */}
+        <h3 className="mb-4 text-lg font-bold text-gray-800">{title}</h3>
 
         <form onSubmit={safeOnSubmit} className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex">
             <div className="flex-1">
               <input
                 type="text"
@@ -326,7 +330,7 @@ return response;`;
                   }
                 }}
                 placeholder="API URL"
-                className={`w-full p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary placeholder-dark-text-secondary focus:outline-none focus:ring-2 ${
+                className={`w-full rounded-l border py-2 px-3 focus:outline-none focus:ring-2 ${
                   errors.url ? 'border-red-500 focus:ring-red-500' : 'focus:ring-dark-primary'
                 }`}
                 required
@@ -338,7 +342,7 @@ return response;`;
             <select
               value={method}
               onChange={(e) => handleMethodChange(e.target.value)}
-              className="w-24 p-2 border rounded bg-dark-50 border-dark-border text-dark-text-primary"
+              className="w-24 py-2 px-3 border rounded-r"
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
@@ -347,15 +351,15 @@ return response;`;
             </select>
           </div>
 
-          <div className="border rounded-lg overflow-hidden border-dark-border">
-            <div className="flex border-b border-dark-border bg-dark-200">
+          <div className="border rounded-lg overflow-hidden">
+            <div className="flex border-b">
               <button
                 type="button"
                 onClick={() => setActiveTab('headers')}
                 className={`flex-1 px-4 py-2 text-sm font-medium ${
                   activeTab === 'headers'
-                    ? 'bg-dark-300 text-dark-text-primary'
-                    : 'text-dark-text-secondary hover:bg-dark-200'
+                    ? 'bg-gray-200'
+                    : 'hover:bg-gray-300'
                 }`}
               >
                 Headers
@@ -365,15 +369,15 @@ return response;`;
                 onClick={() => setActiveTab('body')}
                 className={`flex-1 px-4 py-2 text-sm font-medium ${
                   activeTab === 'body'
-                    ? 'bg-dark-300 text-dark-text-primary'
-                    : 'text-dark-text-secondary hover:bg-dark-200'
+                    ? 'bg-gray-200'
+                    : 'hover:bg-gray-300'
                 }`}
               >
                 Request Body
               </button>
             </div>
 
-            <div className="p-4 bg-dark-50">
+            <div className="p-4">
               {activeTab === 'headers' ? (
                 <div className="space-y-2">
                   <div className="flex justify-end">
@@ -392,22 +396,22 @@ return response;`;
                         value={header.key}
                         onChange={(e) => updateHeader(index, 'key', e.target.value)}
                         placeholder="Header Key"
-                        className="w-1/2 p-2 border rounded bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
+                        className="w-1/2 px-3 py-1.5 border rounded text-xs"
                       />
                       <input
                         type="text"
                         value={header.value}
                         onChange={(e) => updateHeader(index, 'value', e.target.value)}
                         placeholder="Header Value"
-                        className="w-1/2 p-2 border rounded bg-dark-100 border-dark-border text-dark-text-primary placeholder-dark-text-secondary"
+                        className="w-1/2 px-3 py-1.5 border rounded text-xs"
                       />
                       <button
                         type="button"
                         onClick={() => removeHeader(index)}
-                        className="text-dark-text-secondary hover:text-red-500 px-2"
+                        className="px-2 text-gray-400 hover:text-red-500"
                         title="Remove header"
                       >
-                        ×
+                        <FaTimes className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
