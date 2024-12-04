@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import CodeEditor from './Editor';
 import { ErrorBoundary } from './ErrorBoundary';
-import { FaTimes, FaCog } from 'react-icons/fa';
+import { FaTimes, FaCog, FaCode, FaChevronDown } from 'react-icons/fa';
 
 interface RequestFormProps {
   title: string;
@@ -329,7 +329,7 @@ return response;`;
                   }
                 }}
                 placeholder="API URL"
-                className={`w-full rounded-l border py-2 px-3 focus:outline-none focus:ring-2 ${
+                className={`w-full rounded-l border py-2 px-3 focus:outline-none ${
                   errors.url ? 'border-red-500 focus:ring-red-500' : 'focus:ring-dark-primary'
                 }`}
                 required
@@ -471,23 +471,24 @@ return response;`;
         </form>
       </div>
 
-      <div className="p-4 mt-4 border rounded-lg bg-dark-100 border-dark-border">
+      <div className="p-4 mt-4 border rounded-lg">
         <div>
           <button
             onClick={() => setIsModifierOpen(!isModifierOpen)}
-            className="w-full text-sm text-dark-text-primary hover:text-dark-text-secondary py-2 flex items-center justify-center gap-2 rounded-md border border-dark-border hover:bg-dark-200 transition-colors"
+            className="w-full text-sm py-2 flex items-center justify-center gap-2 rounded-md border border-gray-500 border-dashed hover:bg-gray-200 transition-colors"
           >
-            <span>{isModifierOpen ? '▼' : '▶'}</span>
-            Response Modifier
+            {isModifierOpen ? (
+              <FaChevronDown className="h-3 w-3" />
+            ) : (
+              <FaCode className="h-3 w-3" />
+            )}
+            Modify Response
           </button>
 
           {isModifierOpen && (
             <div className="mt-4 space-y-2">
-              <label className="block text-sm font-medium text-dark-text-secondary">
-                Modify Response
-              </label>
               <CodeEditor
-                height="187.5px"
+                height="250px"
                 defaultLanguage="javascript"
                 defaultValue={defaultModifierCode}
                 onChange={(value) => {
@@ -498,7 +499,7 @@ return response;`;
               <button
                 type="button"
                 onClick={() => onModifierChange(modifier)}
-                className="w-full p-2 bg-dark-200 text-dark-text-secondary rounded hover:bg-dark-300 transition-colors mt-2"
+                className="w-full px-3 py-2 border border-gray-600 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
               >
                 Apply Modifier
               </button>
