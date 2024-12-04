@@ -127,10 +127,6 @@ export default function Home() {
                   left={leftResponse} 
                   right={rightResponse} 
                 />
-                <DiffView 
-                  left={leftResponse} 
-                  right={rightResponse} 
-                />
               </div>
             )}
           </div>
