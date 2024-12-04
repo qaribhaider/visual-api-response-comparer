@@ -38,3 +38,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Cypress
+/cypress/screenshots
+/cypress/videos
+/cypress/results
+/cypress/reports
+/cypress/output
+/cypress/a11y
