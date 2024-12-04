@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Split from 'react-split';
 import { RequestForm } from './components/RequestForm';
 import { VisualDiffView } from './components/VisualDiffView';
 import { DiffView } from './components/DiffView';
